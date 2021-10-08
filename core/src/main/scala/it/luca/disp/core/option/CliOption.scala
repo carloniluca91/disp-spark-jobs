@@ -1,6 +1,12 @@
 package it.luca.disp.core.option
 
-sealed trait CliOption[A] {
+/**
+ * Basic option for parsing an argument
+ * @tparam A type of argument related to this option
+ * @tparam C type of class collecting parsed arguments
+ */
+
+sealed trait CliOption[A, C] {
 
   def shortOption: Char
 
@@ -11,26 +17,46 @@ sealed trait CliOption[A] {
   def required: Boolean
 
   protected[option] def optionalValidation: Option[A => Either[String, Unit]]
+
+  def action: (A, C) => C
 }
 
-sealed trait Required[A] extends CliOption[A] {
+/**
+ * Option with required flag set to true
+ * @tparam A type of argument related to this option
+ * @tparam C type of class collecting parsed arguments
+ */
+
+sealed trait Required[A, C] extends CliOption[A, C] {
 
   override def required: Boolean = true
 }
 
-sealed trait WithValidation[A] extends CliOption[A] {
+/**
+ * Option that defines a function for argument validation
+ * @tparam A type of argument related to this option
+ * @tparam C type of class collecting parsed arguments
+ */
+
+sealed trait WithValidation[A, C] extends CliOption[A, C] {
 
   def validation: A => Either[String, Unit]
 }
 
-sealed trait WithoutValidation[A] extends CliOption[A] {
+/**
+ * Option that does not apply validation to related argument
+ * @tparam A type of argument related to this option
+ * @tparam C type of class collecting parsed arguments
+ */
+
+sealed trait WithoutValidation[A, C] extends CliOption[A, C] {
 
   override protected[option] def optionalValidation: Option[A => Either[String, Unit]] = None
 }
 
-trait RequiredWithoutValidation[A] extends Required[A] with WithoutValidation[A]
+trait RequiredWithoutValidation[A, C] extends Required[A, C] with WithoutValidation[A, C]
 
-trait RequiredWithValidation[A] extends Required[A] with WithValidation[A] {
+trait RequiredWithValidation[A, C] extends Required[A, C] with WithValidation[A, C] {
 
   override protected[option] def optionalValidation: Option[A => Either[String, Unit]] = Some(validation)
 }

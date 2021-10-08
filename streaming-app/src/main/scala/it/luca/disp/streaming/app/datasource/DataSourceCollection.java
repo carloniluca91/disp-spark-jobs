@@ -13,7 +13,7 @@ import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @Getter
-public class DataSourcesCollection {
+public class DataSourceCollection {
 
     public static final String ALL = "ALL";
     public static final String DATA_SOURCES = "dataSources";
@@ -21,10 +21,16 @@ public class DataSourcesCollection {
     private final List<StreamingDataSource<?>> dataSources;
 
     @JsonCreator
-    public DataSourcesCollection(@JsonProperty(DATA_SOURCES) List<StreamingDataSource<?>> dataSources) {
+    public DataSourceCollection(@JsonProperty(DATA_SOURCES) List<StreamingDataSource<?>> dataSources) {
 
         this.dataSources = requireNonNull(dataSources, DATA_SOURCES);
     }
+
+    /**
+     * Retrieve a collection of {@link StreamingDataSource} to be then triggered
+     * @param ids collection of strings representing some {@link StreamingDataSource}'s id
+     * @return a collection of {@link StreamingDataSource}
+     */
 
     public List<StreamingDataSource<?>> getDataSourcesForIds(List<String> ids) {
 
@@ -40,7 +46,14 @@ public class DataSourcesCollection {
         }
     }
 
-    protected StreamingDataSource<?> getDataSourceWithId(String id) {
+    /**
+     * Retrieve the {@link StreamingDataSource} related to given id
+     * @param id dataSource id
+     * @return instance of {@link StreamingDataSource} related to input id
+     * @throws IllegalArgumentException if input id does not match any {@link StreamingDataSource}
+     */
+
+    protected StreamingDataSource<?> getDataSourceWithId(String id)throws IllegalArgumentException {
 
         String dataSourceClass = StreamingDataSource.class.getSimpleName();
         Optional<StreamingDataSource<?>> optionalDs = dataSources.stream()

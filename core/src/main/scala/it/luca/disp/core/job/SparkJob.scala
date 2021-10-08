@@ -11,10 +11,10 @@ abstract class SparkJob(protected val sparkSession: SparkSession,
   extends Logging {
 
   /**
-   * Write given DataFrame to an Hive table using given saveMode
-   * @param dataFrame    dataFrame
+   * Write given [[DataFrame]] to an Hive table using given [[SaveMode]]
+   * @param dataFrame dataFrame
    * @param fqTargetTableName fully qualified (i.e. db.table) name of target table
-   * @param saveMode          saveMode to use
+   * @param saveMode saveMode to use
    * @throws SQLException in case of issues with Impala statement execution
    */
 
