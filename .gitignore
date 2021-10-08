@@ -1,0 +1,7 @@
+.idea/*
+target/*
+project/target/*
+project/project/target/*
+core/target/*
+streaming-app/target/*
+streaming-data-model/target/*
