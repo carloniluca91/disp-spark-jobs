@@ -9,12 +9,13 @@ import it.luca.disp.streaming.core.operation.{FailedRecordOperation, RecordOpera
 import it.luca.disp.streaming.model.MsgWrapper
 import org.apache.commons.configuration2.PropertiesConfiguration
 import org.apache.kafka.clients.consumer.ConsumerRecord
-import org.apache.spark.sql.functions.lit
+import org.apache.spark.sql.expressions.UserDefinedFunction
+import org.apache.spark.sql.functions.{lit, udf}
 import org.apache.spark.sql.{DataFrame, SaveMode, SparkSession}
 
 import java.sql.{Connection, Timestamp}
 import java.time.format.DateTimeFormatter
-import java.time.{LocalDate, LocalDateTime}
+import java.time.{LocalDate, LocalDateTime, ZoneId, ZonedDateTime}
 import scala.util.{Failure, Success, Try}
 
 abstract class StreamingJob[T](override protected val sparkSession: SparkSession,
@@ -29,9 +30,22 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
 
   protected final val streamingLogTable: String = properties.getString("spark.log.table")
   protected final val yarnUiUrl: String = properties.getString("yarn.logs.ui.url")
+  protected final val gasDay: Timestamp => Option[String] = ts => {
 
-  protected def buildLogRecord(record: ConsumerRecord[String, String], optionalThrowable: Option[Throwable]): IngestionLogRecord =
-    IngestionLogRecord(sparkSession, record, optionalThrowable, yarnUiUrl)
+    Try {
+      val zonedDateTime = ts.toLocalDateTime.atZone(ZoneId.systemDefault)
+      val dstNormalizedDateTime: ZonedDateTime = if (ZoneId.systemDefault.getRules.isDaylightSavings(zonedDateTime.toInstant))
+        zonedDateTime.minusHours(1) else zonedDateTime
+      if (dstNormalizedDateTime.getHour < 6)
+        dstNormalizedDateTime.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
+      else dstNormalizedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    } match {
+      case Failure(_) => None
+      case Success(value) => Some(value)
+    }
+  }
+
+  protected final val gasDayUdf: UserDefinedFunction = udf(gasDay)
 
   def processBatch(records: Seq[ConsumerRecord[String, String]]): Option[Long] = {
 
@@ -68,8 +82,8 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
     log.info(s"Converting record # $offset of topic partition $topicPartition")
     Try {
 
-      val msgWrapper: MsgWrapper[T] = deserializeAsMsgWrapper(record.value, tClass)
-      toDataFrame(msgWrapper)
+      val wrapper: MsgWrapper[T] = deserializeAsMsgWrapper(record.value, tClass)
+      toDataFrame(wrapper.getPayload)
         .withColumn("record_offset", lit(offset))
         .withColumn("record_topic", lit(topic))
         .withColumn("record_partition", lit(partition))
@@ -89,7 +103,11 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
     }
   }
 
-  protected def writeLogRecords(records: Seq[IngestionLogRecord]): Unit = {
+  private def buildLogRecord(record: ConsumerRecord[String, String],
+                             optionalThrowable: Option[Throwable]): IngestionLogRecord =
+    IngestionLogRecord(sparkSession, record, optionalThrowable, yarnUiUrl)
+
+  private def writeLogRecords(records: Seq[IngestionLogRecord]): Unit = {
 
     import sparkSession.implicits._
 
@@ -108,6 +126,6 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
     }
   }
 
-  protected def toDataFrame(instance: MsgWrapper[T]): DataFrame
+  protected def toDataFrame(payload: T): DataFrame
 
 }

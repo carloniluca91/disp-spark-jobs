@@ -13,7 +13,7 @@ abstract class Consumer[T](protected val kafkaConsumer: KafkaConsumer[String, St
                            protected val streamingJob: StreamingJob[T])
   extends Logging {
 
-  protected val topicPartition: TopicPartition
+  protected val topicPartition: TopicPartition = kafkaConsumer.assignment().head
 
   def poll(): Boolean = {
 
