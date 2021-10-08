@@ -1,17 +1,19 @@
 package it.luca.disp.core.json;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 @Slf4j
 public class ObjectDeserializer {
 
-    private final static ObjectMapper mapper = new ObjectMapper()
+    public final static ObjectMapper mapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
     /**
@@ -67,6 +69,16 @@ public class ObjectDeserializer {
         log.info("Deserializing given string as an instance of {}", className);
         T instance = mapper.readValue(string, tClass);
         log.info("Successfully deserialized given string as an instance of {}", className);
+        return instance;
+    }
+
+    public static <T> List<T> deserializeStringAsCollection(String string, Class<T> tClass) throws IOException {
+
+        String className = tClass.getSimpleName();
+        JavaType type = mapper.getTypeFactory().constructCollectionType(List.class, tClass);
+        log.info("Deserializing given string as a collection of instances of {}", className);
+        List<T> instance = mapper.readValue(string, type);
+        log.info("Successfully deserialized given string as a collection of instances of {}", className);
         return instance;
     }
 }

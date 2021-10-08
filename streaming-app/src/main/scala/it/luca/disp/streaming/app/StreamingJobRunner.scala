@@ -1,11 +1,14 @@
 package it.luca.disp.streaming.app
 
 import it.luca.disp.core.Logging
+import it.luca.disp.core.json.ObjectDeserializer.deserializeStringAsCollection
 import it.luca.disp.core.utils.{initSparkSession, loadProperties, replaceTokensWithProperties}
+import it.luca.disp.streaming.app.job.StreamingDataSource
 import it.luca.disp.streaming.app.option.StreamingAppArguments
 import org.apache.commons.configuration2.PropertiesConfiguration
 import org.apache.spark.sql.SparkSession
 
+import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Source}
 import scala.util.Try
 
@@ -23,6 +26,7 @@ object StreamingJobRunner
       log.info(s"Successfully interpolated all tokens within file ${arguments.dataSourcesFile}")
       bufferedSource.close()
 
+      val streamingDataSources: Seq[StreamingDataSource[_]] = deserializeStringAsCollection(datasourcesJsonString, classOf[StreamingDataSource[_]])
       val sparkSession: SparkSession = initSparkSession
 
     }
