@@ -33,7 +33,7 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
   protected def buildLogRecord(record: ConsumerRecord[String, String], optionalThrowable: Option[Throwable]): IngestionLogRecord =
     IngestionLogRecord(sparkSession, record, optionalThrowable, yarnUiUrl)
 
-  def processBatchOfMessages(records: Seq[ConsumerRecord[String, String]]): Option[Long] = {
+  def processBatch(records: Seq[ConsumerRecord[String, String]]): Option[Long] = {
 
     val conversionOutputs: Seq[RecordOperation] = records.map(processMessage)
     val logRecordsFromFailedConversions: Seq[IngestionLogRecord] = conversionOutputs.collect {
@@ -47,7 +47,7 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
 
       val dataFrame: DataFrame = successfulConversions.map { _.dataFrame }.reduce { _ union _}
       log.info(s"Successfully reduced all of ${successfulConversions.size} ${classOf[DataFrame].getSimpleName}(s)")
-      Try { super.insertInto(dataFrame, targetTable, saveMode) } match {
+      Try { super.insertInto(dataFrame.coalesce(1), targetTable, saveMode) } match {
         case Failure(exception) => (None, successfulConversions.map { x => buildLogRecord(x.record, Some(exception)) })
         case Success(_) =>
           val successfullyWrittenRecords: Seq[ConsumerRecord[String, String]] = successfulConversions.map { _.record }

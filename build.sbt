@@ -53,6 +53,7 @@ lazy val streamingApp = (project in file("streaming-app"))
     commonSettings,
     libraryDependencies ++= sparkCore ::
       sparkSql ::
+      kafkaClients ::
       scopt ::
       lombok::
       scalacTic ::

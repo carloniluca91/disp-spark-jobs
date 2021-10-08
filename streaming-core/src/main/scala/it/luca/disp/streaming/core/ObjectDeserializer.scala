@@ -5,7 +5,6 @@ import it.luca.disp.core.Logging
 import it.luca.disp.streaming.model.MsgWrapper
 
 import java.io.IOException
-import scala.collection.JavaConversions._
 
 object ObjectDeserializer
   extends Logging {
@@ -14,14 +13,13 @@ object ObjectDeserializer
     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 
   @throws[IOException]
-  def deserializeStringAsCollection[T](string: String, tClass: Class[T]): Seq[T] = {
+  def deserializeString[T](string: String, tClass: Class[T]): T = {
 
     val className: String = tClass.getSimpleName
-    val javaType: JavaType = mapper.getTypeFactory.constructCollectionType(classOf[java.util.List[_]], tClass)
-    log.info("Deserializing given string as a collection of instances of {}", className)
-    val instances: java.util.List[T] = mapper.readValue(string, javaType)
-    log.info("Successfully deserialized given string as a collection of instances of {}", className)
-    instances
+    log.info(s"Deserializing given string as an instance of $className")
+    val instance: T = mapper.readValue(string, tClass)
+    log.info("Successfully deserialized given string as an instance of $className")
+    instance
   }
 
   @throws[IOException]
