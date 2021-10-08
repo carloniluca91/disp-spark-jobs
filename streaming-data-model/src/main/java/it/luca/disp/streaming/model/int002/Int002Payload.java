@@ -9,10 +9,12 @@ import java.util.List;
 @Getter
 public class Int002Payload {
 
+    public static final String CICLI = "cicli";
+
     private final List<Int002Ciclo> cicli;
 
     @JsonCreator
-    public Int002Payload(@JsonProperty("cicli") List<Int002Ciclo> cicli) {
+    public Int002Payload(@JsonProperty(CICLI) List<Int002Ciclo> cicli) {
 
         this.cicli = cicli;
     }

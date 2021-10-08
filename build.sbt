@@ -51,8 +51,8 @@ lazy val streamingApp = (project in file("streaming-app"))
   .settings(
     name := "streaming-app",
     commonSettings,
-    libraryDependencies ++= sparkCore :: lombok:: scalacTic :: scalaTest :: scalaMock :: Nil
-  )
+    libraryDependencies ++= sparkCore :: sparkSql :: scopt :: lombok:: scalacTic :: scalaTest :: scalaMock :: Nil
+  ).dependsOn(core, streamingDataModel)
 
 lazy val streamingDataModel = (project in file("streaming-data-model"))
   .settings(
@@ -65,5 +65,5 @@ lazy val core = (project in file("core"))
   .settings(
     commonSettings,
     libraryDependencies ++=
-      sparkCore :: sparkSql :: scopt :: scalacTic :: scalaTest :: scalaMock :: Nil
+      sparkCore :: sparkSql :: lombok :: scopt :: scalacTic :: scalaTest :: scalaMock :: Nil
   )

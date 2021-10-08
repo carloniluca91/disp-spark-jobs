@@ -9,10 +9,12 @@ import java.util.List;
 @Getter
 public class ConduzionePayload {
 
+    public static final String RECORDS = "records";
+
     private final List<ConduzioneRecord> records;
 
     @JsonCreator
-    public ConduzionePayload(@JsonProperty("records") List<ConduzioneRecord> records) {
+    public ConduzionePayload(@JsonProperty(RECORDS) List<ConduzioneRecord> records) {
 
         this.records = records;
     }
