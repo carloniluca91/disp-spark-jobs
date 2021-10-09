@@ -12,7 +12,7 @@ object Main
     case Some(arguments) =>
 
       log.info(s"Successfully parsed streaming app arguments\n\n$arguments")
-      StreamingJobRunner.run(arguments)
+      new StreamingJobRunner().run(arguments)
       log.info("Leaving streaming application main class")
 
     case None => log.error("Error while parsing streaming app arguments")

@@ -8,9 +8,7 @@ import org.apache.commons.configuration2.ex.ConfigurationException
 import org.apache.spark.sql.SparkSession
 
 import java.io.File
-import java.sql.{Connection, DriverManager, SQLException, Timestamp}
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.sql.{Connection, DriverManager, SQLException}
 
 package object utils
   extends Logging {
@@ -45,20 +43,6 @@ package object utils
 
     log.info("Successfully initialized {}", classOf[SparkSession].getSimpleName)
     sparkSession
-  }
-
-  /**
-   * Interpolates given string using an instance of [[PropertiesConfiguration]]
-   * @param string input string
-   * @param properties instance of [[PropertiesConfiguration]]
-   * @return interpolated string (e.g. a token like ${a.property} is replaced with the value of property
-   *         'a.property' retrieved from the instance of [[PropertiesConfiguration]]
-   */
-
-  def replaceTokensWithProperties(string: String, properties: PropertiesConfiguration): String = {
-
-    "\\$\\{([\\w.]+)}".r
-      .replaceAllIn(string, m => s"${properties.getString(m.group(1))}")
   }
 
   /**

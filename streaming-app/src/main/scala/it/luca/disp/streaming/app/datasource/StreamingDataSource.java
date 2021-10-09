@@ -74,7 +74,10 @@ public class StreamingDataSource<T> {
         this.topicName = requireNonNull(topicName, TOPIC_NAME);
         this.topicPartition = requireNonNull(topicPartition, TOPIC_PARTITION);
         this.autoOffsetReset = Optional.ofNullable(autoOffsetReset).orElse(DEFAULT_AUTOOFFSET_RESET);
-        this.maxPollRecords = Optional.ofNullable(maxPollRecords).orElse(DEFAULT_MAX_POLL_RECORDS);
+        this.maxPollRecords = Optional.ofNullable(maxPollRecords)
+                .filter(x -> x != 0)
+                .orElse(DEFAULT_MAX_POLL_RECORDS);
+
         this.dataClass = (Class<T>) Class.forName(requireNonNull(dataClass, DATA_CLASS));
         this.streamingJobClass = (Class<? extends StreamingJob<T>>) Class.forName(requireNonNull(streamingJobClass, STREAMING_JOB_CLASS));
         this.consumerClass = (Class<? extends Consumer<T>>) Class.forName(requireNonNull(consumerClass, CONSUMER_CLASS));

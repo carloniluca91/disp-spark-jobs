@@ -1,8 +1,8 @@
 package it.luca.disp.streaming.app
 
 import java.sql.Timestamp
-import java.time.{LocalDate, LocalDateTime}
 import java.time.format.DateTimeFormatter
+import java.time.{LocalDate, LocalDateTime}
 
 package object utils {
 

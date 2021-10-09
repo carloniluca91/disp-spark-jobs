@@ -1,9 +1,9 @@
 package it.luca.disp.streaming.core.job
 
 import it.luca.disp.core.implicits.SparkSessionWrapper
+import it.luca.disp.streaming.core.StringConsumerRecord
 import it.luca.disp.streaming.core.implicits._
 import it.luca.disp.streaming.core.operation.{FailedRecordOperation, RecordOperation, SuccessfulConversion}
-import org.apache.kafka.clients.consumer.ConsumerRecord
 
 import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
@@ -37,14 +37,14 @@ object IngestionLogRecord {
             yarnUiUrl: String): IngestionLogRecord = {
 
     val applicationId: String = ss.applicationId
-    val (record, optionalThrowable): (ConsumerRecord[String, String], Option[Throwable]) = recordOperation match {
+    val (record, optionalThrowable): (StringConsumerRecord, Option[Throwable]) = recordOperation match {
       case FailedRecordOperation(record, throwable) => (record, Some(throwable))
       case SuccessfulConversion(record, _) => (record, None)
     }
 
     IngestionLogRecord(
-      recordTs = record.sqlTimestamp,
-      recordDt = record.date,
+      recordTs = record.getRecordTimestamp,
+      recordDt = record.getRecordDate,
       recordTopic = record.topic(),
       recordPartition = record.partition(),
       recordOffset = record.offset(),

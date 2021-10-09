@@ -4,6 +4,7 @@ import it.luca.disp.core.Logging
 import it.luca.disp.core.implicits._
 import it.luca.disp.core.job.SparkJob
 import it.luca.disp.streaming.core.ObjectDeserializer.deserializeAsMsgWrapper
+import it.luca.disp.streaming.core.StringConsumerRecord
 import it.luca.disp.streaming.core.implicits._
 import it.luca.disp.streaming.core.operation.{FailedRecordOperation, RecordOperation, SuccessfulConversion}
 import it.luca.disp.streaming.model.MsgWrapper
@@ -41,22 +42,7 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
   // Common attributes and partitioning function
   protected final val streamingLogTable: String = properties.getString("spark.log.table")
   protected final val yarnUiUrl: String = properties.getString("yarn.logs.ui.url")
-  protected final val gasDay: Timestamp => Option[String] = ts => {
-
-    Try {
-      val zonedDateTime: ZonedDateTime = ts.toLocalDateTime.atZone(ZoneId.systemDefault)
-      val dstNormalizedDateTime: ZonedDateTime = if (ZoneId.systemDefault.getRules.isDaylightSavings(zonedDateTime.toInstant))
-        zonedDateTime.minusHours(1) else zonedDateTime
-      if (dstNormalizedDateTime.getHour < 6)
-        dstNormalizedDateTime.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
-      else dstNormalizedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE)
-    } match {
-      case Failure(_) => None
-      case Success(value) => Some(value)
-    }
-  }
-
-  protected final val gasDayUdf: UserDefinedFunction = udf(gasDay)
+  protected final val gasDayUdf: UserDefinedFunction = udf(StreamingJob.gasDay)
 
   /**
    * Process a collection of [[ConsumerRecord]]
@@ -64,7 +50,7 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
    * @return an [[Option]] with the offset to be committed by the consumer
    */
 
-  def processBatch(records: Seq[ConsumerRecord[String, String]]): Option[Long] = {
+  def processBatch(records: Seq[StringConsumerRecord]): Option[Long] = {
 
     // Convert all records to dataFrames
     val conversionOutputs: Seq[RecordOperation] = records.map(processMessage)
@@ -107,7 +93,7 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
    * @return either a [[FailedRecordOperation]] if processing fails, or a [[SuccessfulConversion]] otherwise
    */
 
-  protected def processMessage(record: ConsumerRecord[String, String]): RecordOperation = {
+  protected[job] def processMessage(record: StringConsumerRecord): RecordOperation = {
 
     val (topic, partition, offset): (String, Int, Long) = (record.topic, record.partition, record.offset)
     val topicPartition: String = s"$topic-$partition"
@@ -120,8 +106,8 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
         .withColumn("record_offset", lit(offset))
         .withColumn("record_topic", lit(topic))
         .withColumn("record_partition", lit(partition))
-        .withColumn("record_ts", lit(record.sqlTimestamp))
-        .withColumn("record_dt", lit(record.date))
+        .withColumn("record_ts", lit(record.getRecordTimestamp))
+        .withColumn("record_dt", lit(record.getRecordDate))
         .withColumn("application_id", lit(sparkSession.applicationId))
         .withColumn("insert_ts", lit(Timestamp.valueOf(LocalDateTime.now())))
         .withColumn("insert_dt", lit(LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)))
@@ -177,4 +163,23 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
 
   protected def toDataFrame(payload: T): DataFrame
 
+}
+
+object StreamingJob {
+
+  // Function for giornoGas computation
+  val gasDay: Timestamp => String = ts => {
+
+    Try {
+      val zonedDateTime: ZonedDateTime = ts.toLocalDateTime.atZone(ZoneId.systemDefault)
+      val dstNormalizedDateTime: ZonedDateTime = if (ZoneId.systemDefault.getRules.isDaylightSavings(zonedDateTime.toInstant))
+        zonedDateTime.minusHours(1) else zonedDateTime
+      if (dstNormalizedDateTime.getHour < 6)
+        dstNormalizedDateTime.minusDays(1).format(DateTimeFormatter.ISO_LOCAL_DATE)
+      else dstNormalizedDateTime.format(DateTimeFormatter.ISO_LOCAL_DATE)
+    } match {
+      case Failure(_) => null
+      case Success(value) => value
+    }
+  }
 }

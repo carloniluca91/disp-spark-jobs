@@ -1,0 +1,69 @@
+{
+  "messageTs": "2021-07-02 11:24:27",
+  "messageDt": "2021-07-02",
+  "payload": {
+    "dataOraInvio": "02/07/2021 11:24:27",
+    "nomine": [
+      {
+        "pcs": 10.452816341112209,
+        "valoreEnergia": 125940.15506831832,
+        "unitaMisuraEnergia": "KWH",
+        "valoreVolume": 510484.5719019826,
+        "unitaMisuraVolume": "SMC",
+        "dataElaborazione": "02/07/2021 11:00:00",
+        "dataDecorrenza": "02/07/2021 12:00:00",
+        "codiceRemi": "STENI_WTH",
+        "descrizioneRemi": "Stogit (immissione)",
+        "descrizionePunto": "STOGIT EROGAZIONE",
+        "tipoNomina": "POST",
+        "cicloNomina": "C05",
+        "tipologiaPunto": "Immissione a stoccaggio"
+      },
+      {
+        "pcs": 10.244167887911214,
+        "valoreEnergia": 683138.4370792041,
+        "unitaMisuraEnergia": "KWH",
+        "valoreVolume": 258040.31079465297,
+        "unitaMisuraVolume": "SMC",
+        "dataElaborazione": "02/07/2021 11:00:00",
+        "dataDecorrenza": "02/07/2021 12:00:00",
+        "codiceRemi": "STENI_INJ",
+        "descrizioneRemi": "Stogit (estrazione)",
+        "descrizionePunto": "STOGIT EROGAZIONE",
+        "tipoNomina": "PRE",
+        "cicloNomina": "C11",
+        "tipologiaPunto": "Erogazione da stoccaggio"
+      },
+      {
+        "pcs": 10.452187491593941,
+        "valoreEnergia": 424581.5681091165,
+        "unitaMisuraEnergia": "KWH",
+        "valoreVolume": 141238.269611014,
+        "unitaMisuraVolume": "SMC",
+        "dataElaborazione": "02/07/2021 11:00:00",
+        "dataDecorrenza": "02/07/2021 12:00:00",
+        "codiceRemi": "STENI_WTH",
+        "descrizioneRemi": "Stogit (estrazione)",
+        "descrizionePunto": "STOGIT EROGAZIONE",
+        "tipoNomina": "POST",
+        "cicloNomina": "C01",
+        "tipologiaPunto": "Erogazione da stoccaggio"
+      },
+      {
+        "pcs": 10.46200424093935,
+        "valoreEnergia": 993840.6357308874,
+        "unitaMisuraEnergia": "KWH",
+        "valoreVolume": 361251.03318917038,
+        "unitaMisuraVolume": "SMC",
+        "dataElaborazione": "02/07/2021 11:00:00",
+        "dataDecorrenza": "02/07/2021 12:00:00",
+        "codiceRemi": "STENI_WTH",
+        "descrizioneRemi": "Stogit (immissione)",
+        "descrizionePunto": "STOGIT INIEZIONE",
+        "tipoNomina": "POST",
+        "cicloNomina": "C08",
+        "tipologiaPunto": "Immissione a stoccaggio"
+      }
+    ]
+  }
+}

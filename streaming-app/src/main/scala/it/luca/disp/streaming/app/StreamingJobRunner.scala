@@ -1,7 +1,7 @@
 package it.luca.disp.streaming.app
 
 import it.luca.disp.core.Logging
-import it.luca.disp.core.utils.{initConnection, initSparkSession, loadProperties, replaceTokensWithProperties}
+import it.luca.disp.core.utils.{initConnection, initSparkSession, loadProperties}
 import it.luca.disp.streaming.app.datasource.DataSourceCollection
 import it.luca.disp.streaming.app.option.StreamingAppArguments
 import it.luca.disp.streaming.core.ObjectDeserializer.deserializeString
@@ -15,7 +15,7 @@ import scala.collection.JavaConversions._
 import scala.io.{BufferedSource, Source}
 import scala.util.{Failure, Success, Try}
 
-object StreamingJobRunner
+class StreamingJobRunner
   extends Logging {
 
   def run(arguments: StreamingAppArguments): Unit = {
@@ -24,7 +24,7 @@ object StreamingJobRunner
 
       val properties: PropertiesConfiguration = loadProperties(arguments.propertiesFile)
       val bufferedSource: BufferedSource = Source.fromFile(arguments.dataSourcesFile)
-      val datasourcesJsonString: String = replaceTokensWithProperties(bufferedSource.getLines().mkString("\n"), properties)
+      val datasourcesJsonString: String = StreamingJobRunner.replaceTokensWithProperties(bufferedSource.getLines().mkString("\n"), properties)
       log.info(s"Successfully interpolated all tokens within file ${arguments.dataSourcesFile}")
       bufferedSource.close()
 
@@ -56,5 +56,22 @@ object StreamingJobRunner
       case Failure(exception) => log.error("Caught exception while trying to kick off the circus. Stack trace: ", exception)
       case Success(_) =>
     }
+  }
+}
+
+object StreamingJobRunner {
+
+  /**
+   * Interpolates given string using an instance of [[PropertiesConfiguration]]
+   * @param string input string
+   * @param properties instance of [[PropertiesConfiguration]]
+   * @return interpolated string (e.g. a token like ${a.property} is replaced with the value of property
+   *         'a.property' retrieved from the instance of [[PropertiesConfiguration]]
+   */
+
+  def replaceTokensWithProperties(string: String, properties: PropertiesConfiguration): String = {
+
+    "\\$\\{([\\w.]+)}".r
+      .replaceAllIn(string, m => s"${properties.getString(m.group(1))}")
   }
 }

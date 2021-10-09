@@ -1,0 +1,96 @@
+{
+  "messageTs": "2021-07-02 11:27:27",
+  "messageDt": "2021-07-02",
+  "payload": {
+    "ambitoFlusso": "Stoccaggio",
+    "nomeFlusso": "INT006",
+    "impresaMittente": "1713307",
+    "dataDiCreazione": "02/07/2021 11:27",
+    "numeroDati": 14,
+    "dataProcedura": "02/07/2021",
+    "giornoGas": "02/07/2021",
+    "listaCicli": [
+      {
+        "cicloDiRiferimento": "6",
+        "rinominaEnergia": -76139.58843049295,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": 68860.2313422889,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": -58062.023643208006,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      },
+      {
+        "cicloDiRiferimento": "8",
+        "rinominaEnergia": -50036.96302054332,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": 50249.21254300457,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": -59994.66515325363,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      },
+      {
+        "cicloDiRiferimento": "6",
+        "rinominaEnergia": -32879.34669816709,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": -24712.638586828107,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": -81536.80718286112,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      },
+      {
+        "cicloDiRiferimento": "1",
+        "rinominaEnergia": 4808.672662914585,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": 49819.59476775941,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": 8958.001918367314,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      },
+      {
+        "cicloDiRiferimento": "10",
+        "rinominaEnergia": 6337.255435221232,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": 32817.27612900009,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": -96815.34306977839,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      },
+      {
+        "cicloDiRiferimento": "9",
+        "rinominaEnergia": -54393.88976382842,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": 4124.1280315332119,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": -69545.57072330785,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      },
+      {
+        "cicloDiRiferimento": "2",
+        "rinominaEnergia": -31720.838424123853,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": 6393.618300146307,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": -96932.00041006622,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      },
+      {
+        "cicloDiRiferimento": "2",
+        "rinominaEnergia": 77240.031844607,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": 28918.218275304767,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": -29427.477168139158,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      },
+      {
+        "cicloDiRiferimento": "1",
+        "rinominaEnergia": 88456.02313391795,
+        "unitaDiMisuraRinominaEnergia": "KWH",
+        "limiteMinimoEnergia": -4432.4375291423789,
+        "unitaDiMisuraLimiteMinimoEnergia": "KWH",
+        "limiteMassimoEnergia": -45269.392208910285,
+        "unitaDiMisuraLimiteMassimoEnergia": "KWH"
+      }
+    ]
+  }
+}

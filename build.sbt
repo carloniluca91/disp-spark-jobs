@@ -59,7 +59,8 @@ lazy val streamingApp = (project in file("streaming-app"))
       scalacTic ::
       scalaTest ::
       scalaMock :: Nil
-  ).dependsOn(streamingCore)
+  ).dependsOn(
+  streamingCore % "test->test;compile->compile")
 
 lazy val streamingCore = (project in file("streaming-core"))
   .settings(
@@ -72,7 +73,9 @@ lazy val streamingCore = (project in file("streaming-core"))
       scalacTic ::
       scalaTest ::
       scalaMock :: Nil
-  ).dependsOn(core, streamingDataModel)
+  ).dependsOn(
+  core % "test->test;compile->compile",
+  streamingDataModel)
 
 
 lazy val streamingDataModel = (project in file("streaming-data-model"))
