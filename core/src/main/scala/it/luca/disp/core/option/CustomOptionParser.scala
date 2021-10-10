@@ -9,7 +9,7 @@ abstract class CustomOptionParser[C]
   type TypedRequiredWithValidation[A] = RequiredWithValidation[A, C]
   type TypedRequiredWithoutValidation[A] = RequiredWithoutValidation[A, C]
 
-  protected def setOpt[A](cliOption: TypedCliOption[A])(implicit evidence$2: Read[A]): OptionDef[A, C] = {
+  protected def addOpt[A](cliOption: TypedCliOption[A])(implicit evidence$2: Read[A]): OptionDef[A, C] = {
 
     val basicOptionDef: OptionDef[A, C] = opt[A](cliOption.shortOption, cliOption.longOption)
       .text(cliOption.description)

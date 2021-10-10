@@ -31,6 +31,7 @@ object IngestionLogRecord {
 
   val OK = "OK"
   val KO = "KO"
+  val StartDatePattern = "yyyy-MM-dd"
 
   def apply(ss: SparkSessionWrapper,
             recordOperation: RecordOperation,
@@ -49,12 +50,12 @@ object IngestionLogRecord {
       recordPartition = record.partition(),
       recordOffset = record.offset(),
       ingestionOperationCode = optionalThrowable.map(_ => KO).getOrElse(OK),
-      exceptionCls = optionalThrowable.map(_.getClass.getSimpleName),
+      exceptionCls = optionalThrowable.map(_.getClass.getName),
       exceptionMsg = optionalThrowable.map(_.getMessage),
       applicationId = applicationId,
       applicationName = ss.appName,
       applicationStartTime = ss.startTimeAsTimestamp,
-      applicationStartDate = ss.startTimeAsString("yyyy-MM-dd"),
+      applicationStartDate = ss.startTimeAsString(StartDatePattern),
       yarnApplicationLogUiUrl = s"$yarnUiUrl/$applicationId",
       yarnApplicationLogCmd = s"yarn logs -applicationId $applicationId >> $applicationId.log")
   }

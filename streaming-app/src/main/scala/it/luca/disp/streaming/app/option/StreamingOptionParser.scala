@@ -16,7 +16,7 @@ object StreamingOptionParser
     override def action: (String, StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(propertiesFile = s)
   }
 
-  setOpt(PropertiesFileOption)
+  addOpt(PropertiesFileOption)
 
   val DatasourceFileOption: TypedRequiredWithValidation[String] = new TypedRequiredWithValidation[String] {
     override def shortOption: Char = 'j'
@@ -28,7 +28,16 @@ object StreamingOptionParser
     override def action: (String, StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(dataSourcesFile = s)
   }
 
-  setOpt(DatasourceFileOption)
+  addOpt(DatasourceFileOption)
+
+  val JobIdsOption: TypedRequiredWithoutValidation[Seq[String]] = new TypedRequiredWithoutValidation[Seq[String]] {
+    override def shortOption: Char = 'd'
+    override def longOption: String = "datasources"
+    override def description: String = "Ids of streaming jobs to trigger"
+    override def action: (Seq[String], StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(jobIds = s)
+  }
+
+  addOpt(JobIdsOption)
 
   val LifetimeAmountOption: TypedRequiredWithValidation[Int] = new TypedRequiredWithValidation[Int] {
     override def shortOption: Char = 'l'
@@ -40,7 +49,7 @@ object StreamingOptionParser
     override def action: (Int, StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(lifetimeAmount = s)
   }
 
-  setOpt(LifetimeAmountOption)
+  addOpt(LifetimeAmountOption)
 
   val ChronoUnitOption: TypedRequiredWithValidation[String] = new TypedRequiredWithValidation[String] {
     override def shortOption: Char = 'c'
@@ -53,16 +62,7 @@ object StreamingOptionParser
     override def action: (String, StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(chronoUnit = ChronoUnit.valueOf(s.toUpperCase))
   }
 
-  setOpt(ChronoUnitOption)
-
-  val JobIdsOption: TypedRequiredWithoutValidation[Seq[String]] = new TypedRequiredWithoutValidation[Seq[String]] {
-    override def shortOption: Char = 'j'
-    override def longOption: String = "jobs"
-    override def description: String = "Ids of streaming jobs to trigger"
-    override def action: (Seq[String], StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(jobIds = s)
-  }
-
-  setOpt(JobIdsOption)
+  addOpt(ChronoUnitOption)
 
   val SleepTimeOption: TypedRequiredWithValidation[Int] = new TypedRequiredWithValidation[Int] {
     override def shortOption: Char = 's'
@@ -74,5 +74,5 @@ object StreamingOptionParser
     override def action: (Int, StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(sleepTime = s)
   }
 
-  setOpt(SleepTimeOption)
+  addOpt(SleepTimeOption)
 }

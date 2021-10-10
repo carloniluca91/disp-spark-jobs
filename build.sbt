@@ -22,7 +22,7 @@ lazy val scalaMock = "org.scalamock" %% "scalamock" % scalaMockVersion % Test
 lazy val commonSettings = Seq(
   organization := "it.luca",
   scalaVersion := "2.11.12",
-  version := "0.1",
+  version := "5.0",
 
   // Java compiler options
   javacOptions ++= "-source" :: "1.8" ::
@@ -45,7 +45,7 @@ lazy val extensionsToExclude: Seq[String] = "properties" :: "json" :: "xml" :: "
 lazy val root = (project in file("."))
   .settings(
     name := "disp-spark-jobs")
-  .aggregate(core, streamingDataModel, streamingApp)
+  .aggregate(streamingApp)
 
 lazy val streamingApp = (project in file("streaming-app"))
   .settings(
@@ -59,8 +59,8 @@ lazy val streamingApp = (project in file("streaming-app"))
       scalacTic ::
       scalaTest ::
       scalaMock :: Nil
-  ).dependsOn(
-  streamingCore % "test->test;compile->compile")
+  ).dependsOn(streamingCore % "test->test;compile->compile")
+  .aggregate(core, streamingDataModel, streamingCore)
 
 lazy val streamingCore = (project in file("streaming-core"))
   .settings(

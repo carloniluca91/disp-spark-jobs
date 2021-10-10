@@ -16,5 +16,4 @@ class DataFrameWrapper(protected val dataFrame: DataFrame) {
       case (df, columnName) =>
         df.withColumnRenamed(columnName, columnName.replaceAll("[A-Z]", "_$0").toLowerCase)}
   }
-
 }
