@@ -19,6 +19,8 @@ sealed trait CliOption[A, C] {
   protected[option] def optionalValidation: Option[A => Either[String, Unit]]
 
   def action: (A, C) => C
+
+  override def toString: String = s"-$shortOption, --$longOption ($description)"
 }
 
 /**
@@ -27,7 +29,8 @@ sealed trait CliOption[A, C] {
  * @tparam C type of class collecting parsed arguments
  */
 
-sealed trait Required[A, C] extends CliOption[A, C] {
+sealed trait Required[A, C]
+  extends CliOption[A, C] {
 
   override def required: Boolean = true
 }
@@ -38,7 +41,8 @@ sealed trait Required[A, C] extends CliOption[A, C] {
  * @tparam C type of class collecting parsed arguments
  */
 
-sealed trait WithValidation[A, C] extends CliOption[A, C] {
+sealed trait WithValidation[A, C]
+  extends CliOption[A, C] {
 
   def validation: A => Either[String, Unit]
 }
@@ -49,14 +53,19 @@ sealed trait WithValidation[A, C] extends CliOption[A, C] {
  * @tparam C type of class collecting parsed arguments
  */
 
-sealed trait WithoutValidation[A, C] extends CliOption[A, C] {
+sealed trait WithoutValidation[A, C]
+  extends CliOption[A, C] {
 
   override protected[option] def optionalValidation: Option[A => Either[String, Unit]] = None
 }
 
-trait RequiredWithoutValidation[A, C] extends Required[A, C] with WithoutValidation[A, C]
+trait RequiredWithoutValidation[A, C]
+  extends Required[A, C]
+    with WithoutValidation[A, C]
 
-trait RequiredWithValidation[A, C] extends Required[A, C] with WithValidation[A, C] {
+trait RequiredWithValidation[A, C]
+  extends Required[A, C]
+    with WithValidation[A, C] {
 
   override protected[option] def optionalValidation: Option[A => Either[String, Unit]] = Some(validation)
 }

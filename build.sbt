@@ -47,6 +47,19 @@ lazy val root = (project in file("."))
     name := "disp-spark-jobs")
   .aggregate(streamingApp)
 
+lazy val fileMergerApp = (project in file("file-merger-app"))
+  .settings(
+    name := "file-merger-app",
+    commonSettings,
+    libraryDependencies ++= sparkCore ::
+      sparkSql ::
+      scopt ::
+      scalacTic ::
+      scalaTest ::
+      scalaMock :: Nil
+  ).dependsOn(core % "test->test;compile->compile")
+  .aggregate(core)
+
 lazy val streamingApp = (project in file("streaming-app"))
   .settings(
     name := "streaming-app",

@@ -1,6 +1,7 @@
 package it.luca.disp.streaming.app
 
 import it.luca.disp.core.Logging
+import it.luca.disp.streaming.app.job.StreamingJobRunner
 import it.luca.disp.streaming.app.option.{StreamingAppArguments, StreamingOptionParser}
 
 object Main

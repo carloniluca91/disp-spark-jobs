@@ -1,6 +1,6 @@
 package it.luca.disp.streaming.app.option
 
-import it.luca.disp.core.option.{ApplicationArguments, CustomOptionParser}
+import it.luca.disp.core.option.CustomOptionParser
 
 import java.time.temporal.ChronoUnit
 import scala.util.Try
@@ -9,10 +9,10 @@ object StreamingOptionParser
   extends CustomOptionParser[StreamingAppArguments] {
 
   val PropertiesFileOption: TypedRequiredWithValidation[String] = new TypedRequiredWithValidation[String] {
-    override def shortOption: Char = ApplicationArguments.PropertiesFileShort
-    override def longOption: String = ApplicationArguments.PropertiesFileLong
-    override def description: String = ApplicationArguments.PropertiesFileDescription
-    override def validation: String => Either[String, Unit] = ApplicationArguments.PropertiesFileValidation
+    override def shortOption: Char = CustomOptionParser.PropertiesFileShort
+    override def longOption: String = CustomOptionParser.PropertiesFileLong
+    override def description: String = CustomOptionParser.PropertiesFileDescription
+    override def validation: String => Either[String, Unit] = CustomOptionParser.PropertiesFileValidation
     override def action: (String, StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(propertiesFile = s)
   }
 
@@ -33,7 +33,7 @@ object StreamingOptionParser
   val JobIdsOption: TypedRequiredWithoutValidation[Seq[String]] = new TypedRequiredWithoutValidation[Seq[String]] {
     override def shortOption: Char = 'd'
     override def longOption: String = "datasources"
-    override def description: String = "Ids of streaming jobs to trigger"
+    override def description: String = "Ids of streaming datasources to trigger"
     override def action: (Seq[String], StreamingAppArguments) => StreamingAppArguments = (s, c) => c.copy(jobIds = s)
   }
 

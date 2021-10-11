@@ -1,4 +1,4 @@
-package it.luca.disp.streaming.app
+package it.luca.disp.streaming.app.job
 
 import it.luca.disp.core.Logging
 import it.luca.disp.core.utils.{initConnection, initSparkSession, loadProperties}
