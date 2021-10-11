@@ -1,9 +1,9 @@
 package it.luca.disp.streaming.core.job
 
-import it.luca.disp.core.implicits.SparkSessionWrapper
+import it.luca.disp.core.implicits.SessionWrapper
 import it.luca.disp.streaming.core.StringConsumerRecord
 import it.luca.disp.streaming.core.implicits._
-import it.luca.disp.streaming.core.operation.{FailedRecordOperation, RecordOperation, SuccessfulConversion}
+import it.luca.disp.streaming.core.dto.{FailedRecordOperation, RecordOperation, SuccessfulConversion}
 
 import java.sql.Timestamp
 import java.time.format.DateTimeFormatter
@@ -33,7 +33,7 @@ object IngestionLogRecord {
   val KO = "KO"
   val StartDatePattern = "yyyy-MM-dd"
 
-  def apply(ss: SparkSessionWrapper,
+  def apply(ss: SessionWrapper,
             recordOperation: RecordOperation,
             yarnUiUrl: String): IngestionLogRecord = {
 

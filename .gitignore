@@ -7,3 +7,4 @@ streaming-data-model/target/*
 streaming-core/target/*
 streaming-app/target/*
 file-merger-app/target/*
+file-merger-core/target/*

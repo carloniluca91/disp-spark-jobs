@@ -15,12 +15,16 @@ object FileMergerJobRunner
   def run(arguments: MergerAppArguments): Unit = {
 
     Try {
-      val sparkSession: SparkSession = initSparkSession
+
+      // Initialize required stuff for triggering file merger job
       val properties: PropertiesConfiguration = loadProperties(arguments.propertiesFile)
       val impalaConnection: Connection = initConnection(properties)
+      val sparkSession: SparkSession = initSparkSession
+
+      new FileMergerJob(sparkSession, impalaConnection, properties).run()
     } match {
-      case Failure(exception) => log.error("Caught exception while running file merger application. Stack trace: ", exception)
-      case Success(_) => log.info("Successfully executed file merger application. Goodbye ;)")
+      case Failure(exception) => log.error("Caught exception while running file merger job. Stack trace: ", exception)
+      case Success(_) => log.info("Successfully executed file merger job")
     }
   }
 }

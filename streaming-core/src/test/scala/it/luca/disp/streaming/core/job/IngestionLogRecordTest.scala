@@ -1,9 +1,9 @@
 package it.luca.disp.streaming.core.job
 
 import it.luca.disp.core.BaseTestSuiteWithMocking
-import it.luca.disp.core.implicits.SparkSessionWrapper
+import it.luca.disp.core.implicits.SessionWrapper
 import it.luca.disp.streaming.core.StringConsumerRecord
-import it.luca.disp.streaming.core.operation.{FailedRecordOperation, SuccessfulConversion}
+import it.luca.disp.streaming.core.dto.{FailedRecordOperation, SuccessfulConversion}
 import org.apache.kafka.common.record.TimestampType
 
 import java.sql.Timestamp
@@ -30,7 +30,7 @@ class IngestionLogRecordTest
 
   private val (appId, appName) = ("appId", "appName")
   private val startTime: LocalDateTime = LocalDateTime.now()
-  private val ssWrapper: SparkSessionWrapper = stub[SparkSessionWrapper]
+  private val ssWrapper: SessionWrapper = stub[SessionWrapper]
   (ssWrapper.applicationId _).when().returns(appId)
   (ssWrapper.appName _).when().returns(appName)
   (ssWrapper.startTimeAsTimestamp _).when().returns(Timestamp.valueOf(startTime))

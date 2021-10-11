@@ -3,7 +3,7 @@ package it.luca.disp.streaming.core.job
 import it.luca.disp.core.BaseTestSuite
 import it.luca.disp.streaming.core.ObjectDeserializer.deserializeAsMsgWrapper
 import it.luca.disp.streaming.core.StringConsumerRecord
-import it.luca.disp.streaming.core.operation.{RecordOperation, SuccessfulConversion}
+import it.luca.disp.streaming.core.dto.{RecordOperation, SuccessfulConversion}
 import it.luca.disp.streaming.model.MsgWrapper
 import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.record.TimestampType

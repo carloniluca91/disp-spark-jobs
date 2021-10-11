@@ -1,4 +1,4 @@
-package it.luca.disp.streaming.core.operation
+package it.luca.disp.streaming.core.dto
 
 import it.luca.disp.streaming.core.StringConsumerRecord
 import org.apache.kafka.clients.consumer.ConsumerRecord

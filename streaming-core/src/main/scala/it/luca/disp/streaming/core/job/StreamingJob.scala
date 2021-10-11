@@ -6,7 +6,7 @@ import it.luca.disp.core.job.SparkJob
 import it.luca.disp.streaming.core.ObjectDeserializer.deserializeAsMsgWrapper
 import it.luca.disp.streaming.core.StringConsumerRecord
 import it.luca.disp.streaming.core.implicits._
-import it.luca.disp.streaming.core.operation.{FailedRecordOperation, RecordOperation, SuccessfulConversion}
+import it.luca.disp.streaming.core.dto.{FailedRecordOperation, RecordOperation, SuccessfulConversion}
 import it.luca.disp.streaming.model.MsgWrapper
 import org.apache.commons.configuration2.PropertiesConfiguration
 import org.apache.kafka.clients.consumer.ConsumerRecord
@@ -40,7 +40,7 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
   protected val saveMode: SaveMode
 
   // Common attributes and partitioning function
-  protected final val streamingLogTable: String = properties.getString("spark.log.table")
+  protected final val streamingLogTable: String = properties.getString("spark.log.table.ingestion")
   protected final val yarnUiUrl: String = properties.getString("yarn.logs.ui.url")
   protected final val gasDayUdf: UserDefinedFunction = udf(StreamingJob.gasDay)
 

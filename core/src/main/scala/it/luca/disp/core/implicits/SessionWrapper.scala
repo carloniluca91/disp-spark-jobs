@@ -2,13 +2,12 @@ package it.luca.disp.core.implicits
 
 import org.apache.hadoop.fs.FileSystem
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.sql.functions.{col, lower}
 
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-class SparkSessionWrapper(protected val sparkSession: SparkSession) {
+class SessionWrapper(protected val sparkSession: SparkSession) {
   
   /**
    * Get application id
@@ -32,28 +31,12 @@ class SparkSessionWrapper(protected val sparkSession: SparkSession) {
   def getFileSystem: FileSystem = FileSystem.get(sparkSession.sparkContext.hadoopConfiguration)
 
   /**
-   * Get the location of a table
-   * @param fqTableName fully qualified (i.e. db.table) table name
-   * @return HDFS location of given table
-   */
-
-  def getTableLocation(fqTableName: String): String = {
-
-    sparkSession.sql(s"DESCRIBE FORMATTED $fqTableName")
-      .filter(lower(col("col_name")) === "location")
-      .select(col("data_type"))
-      .collect.head
-      .getAs[String](0)
-  }
-
-
-  /**
    * Get start time of current Spark application as [[Timestamp]]
    * @return [[Timestamp]] representing start time of current Spark application
    */
 
-  def startTimeAsTimestamp : Timestamp = Timestamp.from(
-    Instant.ofEpochMilli(sparkSession.sparkContext.startTime))
+  def startTimeAsTimestamp : Timestamp = Timestamp
+    .from(Instant.ofEpochMilli(sparkSession.sparkContext.startTime))
 
   /**
    * Get start time of current Spark application as a string with given pattern
