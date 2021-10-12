@@ -1,0 +1,31 @@
+<bundle-app name="${bundle_name}" xmlns="uri:oozie:bundle:0.2">
+    <controls>
+        <kick-off-time>${bundle_start_time}</kick-off-time>
+    </controls>
+    <coordinator name="${streaming_job_coordinator_name}">
+        <app-path>${streaming_job_coordinator_path}</app-path>
+        <configuration>
+            <property>
+                <name>startTime1</name>
+                <value>${coordinator_start_time}</value>
+            </property>
+            <property>
+                <name>endTime1</name>
+                <value>${coordinator_end_time}</value>
+            </property>
+        </configuration>
+    </coordinator>
+    <coordinator name="${merger_job_coordinator_name}">
+        <app-path>${merger_job_coordinator_path}</app-path>
+        <configuration>
+            <property>
+                <name>startTime2</name>
+                <value>${coordinator_start_time}</value>
+            </property>
+            <property>
+                <name>endTime2</name>
+                <value>${coordinator_end_time}</value>
+            </property>
+        </configuration>
+    </coordinator>
+</bundle-app>

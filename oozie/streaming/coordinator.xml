@@ -1,0 +1,22 @@
+<coordinator-app
+        xmlns="uri:oozie:coordinator:0.2"
+        name="${streaming_job_coordinator_name}"
+        start="${coordinator_start_time}"
+        end="${coordinator_end_time}"
+        timezone="UTC"
+        frequency="${coord:minutes(15)}">
+
+    <controls>
+        <timeout>1</timeout>
+        <concurrency>1</concurrency>
+        <execution>NONE</execution>
+        <throttle>1</throttle>
+    </controls>
+
+    <action>
+        <workflow>
+            <app-path>${streaming_job_wf_path}</app-path>
+        </workflow>
+    </action>
+
+</coordinator-app>
