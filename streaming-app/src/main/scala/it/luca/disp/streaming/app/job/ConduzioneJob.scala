@@ -15,7 +15,7 @@ class ConduzioneJob(override protected val sparkSession: SparkSession,
   extends StreamingJob[ConduzionePayload](sparkSession, impalaConnection, properties, classOf[ConduzionePayload]) {
 
   override protected val targetTable: String = properties.getString("conduzione.spark.target.table")
-  override protected val saveMode: SaveMode = SaveMode.valueOf(properties.getString("spark.saveMode.append"))
+  override protected val saveMode: SaveMode = SaveMode.valueOf(properties.getString("spark.savemode.append"))
 
   override protected def toDataFrame(payload: ConduzionePayload): DataFrame = {
 

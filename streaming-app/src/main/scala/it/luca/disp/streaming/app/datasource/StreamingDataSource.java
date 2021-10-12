@@ -105,7 +105,7 @@ public class StreamingDataSource<T> {
         KafkaConsumer<String, String> kafkaConsumer = initKafkaConsumer();
 
         Consumer<T> tConsumer = consumerClass
-                .getDeclaredConstructor(KafkaConsumer.class, StreamingJob.class)
+                .getDeclaredConstructor(KafkaConsumer.class, streamingJobClass)
                 .newInstance(kafkaConsumer, streamingJob);
 
         log.info("Successfully initialized instance of {}", consumerClass.getSimpleName());

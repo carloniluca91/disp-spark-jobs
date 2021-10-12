@@ -15,7 +15,7 @@ class Int002Job(override protected val sparkSession: SparkSession,
   extends StreamingJob[Int002Payload](sparkSession, impalaConnection, properties, classOf[Int002Payload]) {
 
   override protected val targetTable: String = properties.getString("int002.spark.target.table")
-  override protected val saveMode: SaveMode = SaveMode.valueOf(properties.getString("spark.saveMode.append"))
+  override protected val saveMode: SaveMode = SaveMode.valueOf(properties.getString("spark.savemode.append"))
 
   override protected def toDataFrame(payload: Int002Payload): DataFrame = {
 

@@ -33,6 +33,6 @@ abstract class SparkJob(protected val sparkSession: SparkSession,
     val impalaStatement = if (saveMode == SaveMode.Overwrite) s"INVALIDATE METADATA $fqTargetTableName" else s"REFRESH $fqTargetTableName"
     log.info(s"Issuing following ImpalaQl statement: $impalaStatement")
     impalaConnection.createStatement.executeUpdate(impalaStatement)
-    log.info("Successfully issued ImpalaQl statement $impalaStatement")
+    log.info(s"Successfully issued ImpalaQl statement: $impalaStatement")
   }
 }

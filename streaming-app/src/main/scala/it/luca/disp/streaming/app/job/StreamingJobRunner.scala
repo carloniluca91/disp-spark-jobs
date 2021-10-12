@@ -37,7 +37,7 @@ class StreamingJobRunner
       val consumers: Seq[Consumer[_]] = collection.getDataSourcesForIds(properties.getList(classOf[String], "spark.streaming.jobs"))
         .map { _.initConsumer(sparkSession, connection, properties) }
 
-      val sleepTimeInSeconds: Int = properties.getInt("spark.streaming.sleepTimeInSeconds")
+      val sleepTimeInSeconds: Int = properties.getInt("spark.streaming.sleepTime")
       val lifetimeAmout: Int = properties.getInt("spark.streaming.lifetime.amount")
       val chronoUnit: ChronoUnit = ChronoUnit.valueOf(properties.getString("spark.streaming.lifetime.unit").toUpperCase)
       val applicationEndTime: LocalDateTime = LocalDateTime.now().plus(lifetimeAmout, chronoUnit)

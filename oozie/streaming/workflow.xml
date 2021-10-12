@@ -17,7 +17,7 @@
                 --queue ${spark_queue}
                 --files ${application_lib_path}/${spark_application_properties_file},${application_lib_path}/${spark_application_log4j_file_name},${application_lib_path}/${streaming_job_datasource_file}
                 --jars ${application_lib_path}/${impala_jdbc_driver_jar_name}
-                --driver-java-options "-Dlog4j.configurationFile=${spark_application_log4j_file_name}"
+                --driver-java-options "-Dlog4j.configuration=${spark_application_log4j_file_name}"
                 --driver-class-path /etc/hive/conf
                 --driver-memory ${streaming_job_spark_driver_memory}
                 --executor-memory ${streaming_job_spark_executor_memory}

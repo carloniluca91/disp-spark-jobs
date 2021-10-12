@@ -16,7 +16,7 @@ class JarvisJob(override protected val sparkSession: SparkSession,
   extends StreamingJob[JarvisPayload](sparkSession, impalaConnection, properties, classOf[JarvisPayload]) {
 
   override protected val targetTable: String = properties.getString("jarvis.spark.target.table")
-  override protected val saveMode: SaveMode = SaveMode.valueOf(properties.getString("spark.saveMode.append"))
+  override protected val saveMode: SaveMode = SaveMode.valueOf(properties.getString("spark.savemode.append"))
 
   override protected def toDataFrame(payload: JarvisPayload): DataFrame = {
 

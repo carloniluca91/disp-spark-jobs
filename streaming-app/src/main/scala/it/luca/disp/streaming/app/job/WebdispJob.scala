@@ -17,7 +17,7 @@ class WebdispJob(override protected val sparkSession: SparkSession,
   extends StreamingJob[WebdispPayload](sparkSession, impalaConnection, properties, classOf[WebdispPayload]) {
 
   override protected val targetTable: String = properties.getString("webdisp.spark.target.table")
-  override protected val saveMode: SaveMode = SaveMode.valueOf(properties.getString("spark.saveMode.append"))
+  override protected val saveMode: SaveMode = SaveMode.valueOf(properties.getString("spark.savemode.append"))
 
   override protected def toDataFrame(payload: WebdispPayload): DataFrame = {
 
