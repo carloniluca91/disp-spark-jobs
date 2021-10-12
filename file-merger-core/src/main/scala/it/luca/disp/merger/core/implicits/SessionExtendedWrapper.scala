@@ -8,6 +8,12 @@ import org.apache.spark.sql.functions.{col, lower}
 class SessionExtendedWrapper(override protected val sparkSession: SparkSession)
   extends SessionWrapper(sparkSession) {
 
+  /**
+   * Get optional partition column for given tableName
+   * @param tableName name of Hive table
+   * @return an [[Option]] of [[Column]], defined if given table is partitioned
+   */
+
   def getOptionalPartitionColumn(tableName: String): Option[Column] = {
 
     sparkSession.catalog.listColumns(tableName)

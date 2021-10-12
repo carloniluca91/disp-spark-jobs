@@ -57,7 +57,7 @@ lazy val fileMergerApp = (project in file("file-merger-app"))
       scalacTic ::
       scalaTest ::
       scalaMock :: Nil
-  ).dependsOn(fileMergerCore)
+  ).dependsOn(core % "test->test;compile->compile", fileMergerCore)
   .aggregate(core, fileMergerCore)
 
 lazy val fileMergerCore = (project in file("file-merger-core"))

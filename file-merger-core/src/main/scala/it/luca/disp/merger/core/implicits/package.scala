@@ -1,6 +1,5 @@
 package it.luca.disp.merger.core
 
-import it.luca.disp.core.implicits.FsWrapper
 import org.apache.hadoop.fs.FileSystem
 import org.apache.spark.sql.{DataFrame, SparkSession}
 

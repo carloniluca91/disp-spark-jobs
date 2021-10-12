@@ -2,7 +2,6 @@ package it.luca.disp.merger.app.job
 
 import it.luca.disp.core.Logging
 import it.luca.disp.core.job.SparkJob
-import it.luca.disp.merger.app.dto.MergeOperationInfo
 import it.luca.disp.merger.core.implicits._
 import org.apache.commons.configuration2.PropertiesConfiguration
 import org.apache.hadoop.fs.{FileSystem, Path}
@@ -22,9 +21,40 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
   protected final val fs: FileSystem = sparkSession.getFileSystem
   protected final val dbName: String = properties.getString("spark.default.database")
   protected final val minimumFileSize: Long = properties.getLong("spark.fileSize.minimum.bytes")
-  protected final val maximumNumberOfSmallFiles: Int = properties.getInt("spark.smallFile.maximum")
+  protected final val fileNumberThreshold: Int = properties.getInt("spark.smallFile.maximum")
   protected final val sparkOutputTmpPath: String = properties.getString("spark.output.tmp.path")
   protected final val yarnUiUrl: String = properties.getString("yarn.logs.ui.url")
+
+  /**
+   * Get an instance of [[MergerLogRecord]] from a merging operation on a partitioned table
+   * @param table processed [[Table]]
+   * @param partitionColumn table's partition [[Column]]
+   * @param partitionValue table's partition value
+   * @param optionalThrowable optional exception raised by merging operation
+   * @return instance of [[MergerLogRecord]]
+   */
+
+  protected final def recordForPartitionedTable(table: Table,
+                                                partitionColumn: Column,
+                                                partitionValue: String,
+                                                optionalThrowable: Option[Throwable]): MergerLogRecord =
+    MergerLogRecord(sparkSession, table, partitionColumn, partitionValue, optionalThrowable, yarnUiUrl)
+
+  /**
+   * Get an instance of [[MergerLogRecord]] from a merging operation on a non-partitioned table
+   * @param table processed [[Table]]
+   * @param optionalThrowable optional exception raised by merging operation
+   * @return instance of [[MergerLogRecord]]
+   */
+
+  protected final def recordForNonPartitionedTable(table: Table,
+                                                   optionalThrowable: Option[Throwable]): MergerLogRecord = {
+    MergerLogRecord(sparkSession, table, optionalThrowable, yarnUiUrl)
+  }
+
+  /**
+   * Execute job
+   */
 
   def run(): Unit = {
 
@@ -39,10 +69,10 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
 
     // Link every table to its potential partition column and handle them accordingly
     val tablesMaybeWithPartitionColumn: Seq[(Table, Option[Column])] = tables.map { t => (t, sparkSession.getOptionalPartitionColumn(t.name)) }
-    val logRecordsFromPartitionedTables: Seq[FileMergerLogRecord] = tablesMaybeWithPartitionColumn.flatten {
+    val logRecordsFromPartitionedTables: Seq[MergerLogRecord] = tablesMaybeWithPartitionColumn.flatten {
       case (table, maybeColumn) if maybeColumn.isDefined => handlePartitionedTable(table, maybeColumn.get) }
 
-    val logRecordsFromNonPartitionedTables: Seq[FileMergerLogRecord] = tablesMaybeWithPartitionColumn
+    val logRecordsFromNonPartitionedTables: Seq[MergerLogRecord] = tablesMaybeWithPartitionColumn
       .collect { case (table, maybeColumn) if maybeColumn.isEmpty => handleNonPartitionedTable(table) }
       .collect { case Some(x) => x }
 
@@ -50,21 +80,29 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
     writeLogRecords(logRecordsFromPartitionedTables ++ logRecordsFromNonPartitionedTables)
   }
 
-  protected def handlePartitionedTable(table: Table, partitionColumn: Column): Seq[FileMergerLogRecord] = {
+  /**
+   * Execute job on a partitioned table
+   * @param table [[Table]] to process
+   * @param partitionColumn table's partition [[Column]]
+   * @return collection of [[MergerLogRecord]] (one for each partition which has been merged)
+   */
+
+  protected def handlePartitionedTable(table: Table, partitionColumn: Column): Seq[MergerLogRecord] = {
 
     val (tableName, tableLocation): (String, String) = (table.name, sparkSession.getTableLocation(table.name))
     log.info(s"Location of table $tableName is $tableLocation. Looking for table partitions to be eventually merged")
-    val logRecords: Seq[FileMergerLogRecord] = fs.getPartitionDirectories(tableLocation)
-      .filter { p => fs.needsToBeMerged(p.getPath, minimumFileSize, maximumNumberOfSmallFiles) }
+    val logRecords: Seq[MergerLogRecord] = fs.getPartitionDirectories(tableLocation)
+      .filter { p => fs.containsTooManySmallFiles(p.getPath, fileNumberThreshold, minimumFileSize) }
       .map { p =>
 
-        val partitionValue: String = p.getPath.getName.split(s"=")(1)
+        val partitionName: String = p.getPath.getName
+        val partitionValue: String = partitionName.split(s"=")(1)
         val overallSizeOfPartitionFiles: Double = fs.getTotalSizeOfFilesInBytes(p.getPath)
         val optionalThrowable: Option[Throwable] = Try {
 
           // Compute optimal number of output files, repartition to it and write back using saveMode OverWrite
           val numPartitions: Int = Math.ceil(overallSizeOfPartitionFiles / minimumFileSize.toDouble).toInt
-          log.info(s"Found more than $maximumNumberOfSmallFiles small file(s) within partition ${p.getPath} of table $tableName. Merging them into $numPartitions file(s)")
+          log.info(s"Found more than $fileNumberThreshold small file(s) within partition $partitionName of table $tableName. Merging them into $numPartitions file(s)")
           val dataFrameWithMergedPartitionFiles: DataFrame = sparkSession.table(tableName)
             .filter(col(partitionColumn.name) === partitionValue)
             .coalesce(numPartitions)
@@ -72,32 +110,38 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
           super.insertInto(dataFrameWithMergedPartitionFiles, tableName, SaveMode.Append)
         } match {
           case Failure(exception) =>
-            log.error(s"Caught exception while merging files within partition ${p.getPath} of table $tableName. Stack trace: ", exception)
+            log.error(s"Caught exception while merging files within partition $partitionName of table $tableName. Stack trace: ", exception)
             Some(exception)
           case Success(_) =>
-            log.info(s"Successfully merged files within partition ${p.getPath} of table $tableName")
+            log.info(s"Successfully merged files within partition $partitionName of table $tableName")
             None
         }
 
-        FileMergerLogRecord(sparkSession, MergeOperationInfo(tableName, partitionColumn.name, partitionValue), yarnUiUrl, optionalThrowable)
+        recordForPartitionedTable(table, partitionColumn, partitionValue, optionalThrowable)
       }
 
     log.info(s"Successfully checked partitions of table $tableName")
     logRecords
   }
 
-  protected def handleNonPartitionedTable(table: Table): Option[FileMergerLogRecord] = {
+  /**
+   * Execute job on a non-partitioned table
+   * @param table [[Table]] to process
+   * @return optional [[MergerLogRecord]] (defined if given table has been merged)
+   */
+
+  protected def handleNonPartitionedTable(table: Table): Option[MergerLogRecord] = {
 
     val (tableName, tableLocation): (String, String) = (table.name, sparkSession.getTableLocation(table.name))
     log.info(s"Location of table $tableName is $tableLocation. Starting to check if the table files need to be merged")
     val tableLocationPath: Path = new Path(tableLocation)
-    if (fs.needsToBeMerged(tableLocationPath, minimumFileSize, maximumNumberOfSmallFiles)) {
+    if (fs.containsTooManySmallFiles(tableLocationPath, fileNumberThreshold, minimumFileSize)) {
 
       // Write content of this table in a temporary path on HDFS, then read it back and write using saveMode OverWrite
       val optionalThrowable: Option[Throwable] = Try {
         val overallSizeOfTableFiles: Double = fs.getTotalSizeOfFilesInBytes(tableLocationPath)
         val numPartitions: Int = Math.ceil(overallSizeOfTableFiles / minimumFileSize.toDouble).toInt
-        log.info(s"Found more than $maximumNumberOfSmallFiles small files within table $tableName. Merging them into $numPartitions file(s)")
+        log.info(s"Found more than $fileNumberThreshold small files within table $tableName. Merging them into $numPartitions file(s)")
 
         sparkSession.table(tableName)
           .coalesce(numPartitions)
@@ -111,16 +155,21 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
         case Success(_) => log.info(s"Successfully merged files within table $tableName"); None
       }
 
-      Some(FileMergerLogRecord(sparkSession, MergeOperationInfo(tableName), yarnUiUrl, optionalThrowable))
+      Some(recordForNonPartitionedTable(table, optionalThrowable))
     } else {
-      log.info(s"No operation required for table $tableName")
+      log.info(s"No action required for table $tableName")
       None
     }
   }
 
-  protected def writeLogRecords(logRecords: Seq[FileMergerLogRecord]): Unit = {
+  /**
+   * Save some instances of [[MergerLogRecord]] for logging purposes
+   * @param logRecords collection of [[MergerLogRecord]]
+   */
 
-    val recordsDescription = s"${logRecords.size} ${classOf[FileMergerLogRecord].getSimpleName}(s)"
+  protected def writeLogRecords(logRecords: Seq[MergerLogRecord]): Unit = {
+
+    val recordsDescription = s"${logRecords.size} ${classOf[MergerLogRecord].getSimpleName}(s)"
     Try {
 
       import sparkSession.implicits._
