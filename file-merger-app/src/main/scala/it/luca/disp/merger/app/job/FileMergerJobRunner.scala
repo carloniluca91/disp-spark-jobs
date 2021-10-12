@@ -19,7 +19,7 @@ object FileMergerJobRunner
       // Initialize required stuff for triggering file merger job
       val properties: PropertiesConfiguration = loadProperties(arguments.propertiesFile)
       val impalaConnection: Connection = initConnection(properties)
-      val sparkSession: SparkSession = initSparkSession
+      val sparkSession: SparkSession = initSparkSession(properties)
 
       new FileMergerJob(sparkSession, impalaConnection, properties).run()
     } match {

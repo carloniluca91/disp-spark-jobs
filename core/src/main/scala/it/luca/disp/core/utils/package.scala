@@ -33,7 +33,13 @@ package object utils
     connection
   }
 
-  def initSparkSession: SparkSession = {
+  /**
+   * Init a [[SparkSession]] and set its current database
+   * @param properties [[PropertiesConfiguration]] from which dbName should be extracted
+   * @return active [[SparkSession]] with Hive support and current database set
+   */
+
+  def initSparkSession(properties: PropertiesConfiguration): SparkSession = {
 
     val sparkSession = SparkSession.builder
       .enableHiveSupport
@@ -41,7 +47,9 @@ package object utils
       .config("hive.exec.dynamic.partition.mode", "nonstrict")
       .getOrCreate
 
-    log.info("Successfully initialized {}", classOf[SparkSession].getSimpleName)
+    val dbName: String = properties.getString("impala.db.name")
+    sparkSession.catalog.setCurrentDatabase(dbName)
+    log.info(s"Successfully initialized ${classOf[SparkSession].getSimpleName} with current db $dbName")
     sparkSession
   }
 

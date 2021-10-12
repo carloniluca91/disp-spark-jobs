@@ -15,7 +15,7 @@
             <jar>${application_lib_path}/${streaming_job_spark_jar_name}</jar>
             <spark-opts>
                 --queue ${spark_queue}
-                --files ${application_lib_path}/${spark_application_properties_file},${application_lib_path}/${spark_application_log4j_file_name}
+                --files ${application_lib_path}/${spark_application_properties_file},${application_lib_path}/${spark_application_log4j_file_name},${application_lib_path}/${streaming_job_datasource_file}
                 --jars ${application_lib_path}/${impala_jdbc_driver_jar_name}
                 --driver-java-options "-Dlog4j.configurationFile=${spark_application_log4j_file_name}"
                 --driver-class-path /etc/hive/conf
@@ -25,14 +25,8 @@
 
             <arg>-p</arg>
             <arg>${spark_application_properties_file}</arg>
-            <arg>-t</arg>
-            <arg>${streaming_job_arg_application_lifetime}</arg>
-            <arg>-u</arg>
-            <arg>${streaming_job_arg_application_lifetime_unit}</arg>
             <arg>-j</arg>
-            <arg>${streaming_job_arg_job_names}</arg>
-            <arg>-s</arg>
-            <arg>${streaming_job_arg_sleep_time_in_secods}</arg>
+            <arg>${streaming_job_datasource_file}</arg>
 
         </spark>
         <ok to="end"/>

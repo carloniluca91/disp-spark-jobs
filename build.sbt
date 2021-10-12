@@ -50,7 +50,9 @@ lazy val excludeResources: Setting[Task[Seq[File]]] = (Compile / unmanagedResour
   }.reduce(_ || _))
 
 // Assembly settings: exclude Scala library and MergeStrategy
-lazy val excludeScalaLibrary: Setting[Task[AssemblyOption]] = assembly / assemblyOption := (assemblyOption in assembly).value.copy(includeScala = false)
+lazy val excludeScalaLibrary: Setting[Task[AssemblyOption]] = assembly / assemblyOption := (assemblyOption in assembly)
+  .value.copy(includeScala = false)
+
 lazy val mergeStrategy: Setting[String => MergeStrategy] = assembly / assemblyMergeStrategy := {
   case PathList("META-INF", _*) => MergeStrategy.discard
   case x =>

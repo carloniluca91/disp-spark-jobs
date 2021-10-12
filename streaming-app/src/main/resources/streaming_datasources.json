@@ -3,42 +3,42 @@
     {
       "id": "WEBDISP",
       "bootstrapServers": "${kafka.default.bootstrap.servers}",
-      "groupId": "webdisp_${environment}",
-      "topicName": "1357-disp-webdisp-${environment}",
+      "groupId": "${webdisp.kafka.group.id}",
+      "topicName": "${webdisp.kafka.topic.name}",
       "topicPartition": 0,
-      "dataClass": "it.luca.disp.streaming.model.webdisp.WebdispPayload",
-      "streamingJobClass": "it.luca.disp.streaming.app.job.WebdispJob",
-      "consumerClass": "it.luca.disp.streaming.app.consumer.WebdispConsumer"
+      "dataClass": "${webdisp.datasource.dataClass}",
+      "streamingJobClass": "${webdisp.datasource.jobClass}",
+      "consumerClass": "${webdisp.datasource.consumerClass}"
     },
     {
       "id": "JARVIS",
       "bootstrapServers": "${kafka.default.bootstrap.servers}",
-      "groupId": "jarvis_${environment}",
-      "topicName": "1357-disp-jarvis-${environment}",
+      "groupId": "${jarvis.kafka.group.id}",
+      "topicName": "${jarvis.kafka.topic.name}",
       "topicPartition": 0,
-      "dataClass": "it.luca.disp.streaming.model.jarvis.JarvisPayload",
-      "streamingJobClass": "it.luca.disp.streaming.app.job.JarvisJob",
-      "consumerClass": "it.luca.disp.streaming.app.consumer.JarvisConsumer"
+      "dataClass": "${jarvis.datasource.dataClass}",
+      "streamingJobClass": "${jarvis.datasource.jobClass}",
+      "consumerClass": "${jarvis.datasource.consumerClass}"
     },
     {
       "id": "INT002",
       "bootstrapServers": "${kafka.default.bootstrap.servers}",
-      "groupId": "int002_${environment}",
-      "topicName": "1357-disp-int002-${environment}",
+      "groupId": "${int002.kafka.group.id}",
+      "topicName": "${int002.kafka.topic.name}",
       "topicPartition": 0,
-      "dataClass": "it.luca.disp.streaming.model.int002.Int002Payload",
-      "streamingJobClass": "it.luca.disp.streaming.app.job.Int002Job",
-      "consumerClass": "it.luca.disp.streaming.app.consumer.Int002Consumer"
+      "dataClass": "${int002.datasource.dataClass}",
+      "streamingJobClass": "${int002.datasource.jobClass}",
+      "consumerClass": "${int002.datasource.consumerClass}"
     },
     {
       "id": "CONDUZIONE",
       "bootstrapServers": "${kafka.default.bootstrap.servers}",
-      "groupId": "conduzione_${environment}",
-      "topicName": "1357-disp-conduzione-${environment}",
+      "groupId": "${conduzione.kafka.group.id}",
+      "topicName": "${conduzione.kafka.topic.name}",
       "topicPartition": 0,
-      "dataClass": "it.luca.disp.streaming.model.conduzione.ConduzionePayload",
-      "streamingJobClass": "it.luca.disp.streaming.app.job.ConduzioneJob",
-      "consumerClass": "it.luca.disp.streaming.app.consumer.ConduzioneConsumer"
+      "dataClass": "${conduzione.datasource.dataClass}",
+      "streamingJobClass": "${conduzione.datasource.jobClass}",
+      "consumerClass": "${conduzione.datasource.consumerClass}"
     }
   ]
 }

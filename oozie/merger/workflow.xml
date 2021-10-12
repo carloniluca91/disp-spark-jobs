@@ -25,8 +25,6 @@
 
             <arg>-p</arg>
             <arg>${spark_application_properties_file}</arg>
-            <arg>-s</arg>
-            <arg>${merger_job_arg_file_size_threshold_mb}</arg>
 
         </spark>
         <ok to="end"/>

@@ -40,7 +40,7 @@ abstract class StreamingJob[T](override protected val sparkSession: SparkSession
   protected val saveMode: SaveMode
 
   // Common attributes and partitioning function
-  protected final val streamingLogTable: String = properties.getString("spark.log.table.ingestion")
+  protected final val streamingLogTable: String = properties.getString("spark.streaming.logTable")
   protected final val yarnUiUrl: String = properties.getString("yarn.logs.ui.url")
   protected final val gasDayUdf: UserDefinedFunction = udf(StreamingJob.gasDay)
 

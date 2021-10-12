@@ -19,10 +19,9 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
     with Logging {
 
   protected final val fs: FileSystem = sparkSession.getFileSystem
-  protected final val dbName: String = properties.getString("spark.default.database")
-  protected final val minimumFileSize: Long = properties.getLong("spark.fileSize.minimum.bytes")
-  protected final val fileNumberThreshold: Int = properties.getInt("spark.smallFile.maximum")
-  protected final val sparkOutputTmpPath: String = properties.getString("spark.output.tmp.path")
+  protected final val minimumFileSize: Long = properties.getLong("spark.merger.fileSize.minimum.bytes")
+  protected final val fileNumberThreshold: Int = properties.getInt("spark.merger.smallFile.maximum")
+  protected final val sparkOutputTmpPath: String = properties.getString("spark.merger.output.tmp.path")
   protected final val yarnUiUrl: String = properties.getString("yarn.logs.ui.url")
 
   /**
@@ -58,14 +57,12 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
 
   def run(): Unit = {
 
-    // Get list of tables whose status should be analyzed
-    sparkSession.catalog.setCurrentDatabase(dbName)
-    log.info(s"Set current database to $dbName for this ${classOf[SparkSession].getSimpleName}")
+    val currentDb: String = sparkSession.catalog.currentDatabase
     val tables: Seq[Table] = sparkSession.catalog.listTables
       .filter(t => !t.tableType.equalsIgnoreCase("view"))
       .collect()
 
-    log.info(s"Found ${tables.size} table(s) within db $dbName")
+    log.info(s"Found ${tables.size} table(s) within db $currentDb")
 
     // Link every table to its potential partition column and handle them accordingly
     val tablesMaybeWithPartitionColumn: Seq[(Table, Option[Column])] = tables.map { t => (t, sparkSession.getOptionalPartitionColumn(t.name)) }
@@ -77,6 +74,7 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
       .collect { case Some(x) => x }
 
     // Write generated collection of log records
+    log.info(s"Analyzed all of ${tables.size} table(s) within db $currentDb")
     writeLogRecords(logRecordsFromPartitionedTables ++ logRecordsFromNonPartitionedTables)
   }
 
@@ -174,7 +172,7 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
 
       import sparkSession.implicits._
 
-      val logTableName: String = properties.getString("spark.log.table.fileMerger")
+      val logTableName: String = properties.getString("spark.merger.logTable")
       val logRecordsDf: DataFrame = logRecords.toDF()
         .coalesce(1)
         .withSqlNamingConvention()
