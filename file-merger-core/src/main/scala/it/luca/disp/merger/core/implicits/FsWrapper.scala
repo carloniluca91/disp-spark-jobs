@@ -34,8 +34,13 @@ class FsWrapper(protected val fs: FileSystem)
       .filter(p => p.isDirectory && FsWrapper.PartitionDirectoryRegex
         .findFirstMatchIn(p.getPath.getName).isDefined)
 
-    val partitionDirectoriesDescription: String = partitionDirectories.map { p => s"  ${p.getPath.getName}" }.mkString("\n").concat("\n")
-    log.info(s"Found ${partitionDirectories.size} partition directories within table location $tableLocation\n\n$partitionDirectoriesDescription")
+    if (partitionDirectories.nonEmpty) {
+      val partitionDirectoriesDescription: String = partitionDirectories.map { p => s"  ${p.getPath.getName}" }.mkString("\n").concat("\n")
+      log.info(s"Found ${partitionDirectories.size} partition directories within table location $tableLocation\n\n$partitionDirectoriesDescription")
+    } else {
+      log.warn(s"No partitions found at table location $tableLocation")
+    }
+
     partitionDirectories
   }
 

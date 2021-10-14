@@ -18,7 +18,7 @@ object ObjectDeserializer
     val className: String = tClass.getSimpleName
     log.info(s"Deserializing given string as an instance of $className")
     val instance: T = mapper.readValue(string, tClass)
-    log.info("Successfully deserialized given string as an instance of $className")
+    log.info(s"Successfully deserialized given string as an instance of $className")
     instance
   }
 

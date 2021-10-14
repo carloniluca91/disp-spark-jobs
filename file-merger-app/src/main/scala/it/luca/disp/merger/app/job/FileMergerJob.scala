@@ -105,7 +105,7 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
             .filter(col(partitionColumn.name) === partitionValue)
             .coalesce(numPartitions)
 
-          super.insertInto(dataFrameWithMergedPartitionFiles, tableName, SaveMode.Append)
+          super.insertInto(dataFrameWithMergedPartitionFiles, tableName, SaveMode.Overwrite)
         } match {
           case Failure(exception) =>
             log.error(s"Caught exception while merging files within partition $partitionName of table $tableName. Stack trace: ", exception)
@@ -147,7 +147,7 @@ class FileMergerJob(override protected val sparkSession: SparkSession,
 
         log.info(s"Successfully saved data at temporary path $sparkOutputTmpPath")
         val dataFrameWithTableMergedFiles: DataFrame = sparkSession.read.parquet(sparkOutputTmpPath).coalesce(numPartitions)
-        super.insertInto(dataFrameWithTableMergedFiles, tableName, SaveMode.Append)
+        super.insertInto(dataFrameWithTableMergedFiles, tableName, SaveMode.Overwrite)
       } match {
         case Failure(exception) => log.error(s"Caught exception while merging files within table $tableName. Stack trace: ", exception); Some(exception)
         case Success(_) => log.info(s"Successfully merged files within table $tableName"); None
